@@ -70,6 +70,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
+
+        if(magneticSensor != null){
+            sensorManager?.registerListener(this, magneticSensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+        }
+        if(accelerometerSensor != null){
+            sensorManager?.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        }
     }
 
     override fun onPause() {
