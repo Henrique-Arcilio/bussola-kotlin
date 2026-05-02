@@ -72,11 +72,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onResume()
 
         if(magneticSensor != null){
-            sensorManager?.registerListener(this, magneticSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager?.registerListener(this, magneticSensor, SensorManager.SENSOR_DELAY_GAME)
 
         }
         if(accelerometerSensor != null){
-            sensorManager?.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            sensorManager?.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME)
         }
     }
 
