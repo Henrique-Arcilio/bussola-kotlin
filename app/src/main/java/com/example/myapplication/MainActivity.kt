@@ -42,29 +42,25 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             hasNorteMag = true
         }
 
-        if(!hasGravidade || !hasNorteMag){
-            return
+        if(hasGravidade && hasNorteMag){
+            var rotacao = FloatArray(9);
+            var orientacao = FloatArray(3)
+
+            val funcionou =  SensorManager.getRotationMatrix(rotacao, null, vetorGravidade, vetorNorteMagnetico)
+
+            if(funcionou){
+                SensorManager.getOrientation(rotacao, orientacao)
+
+                var azimuth = Math.toDegrees(orientacao[0].toDouble()).toFloat()
+
+                azimuth = (azimuth + 360) % 360
+
+                bussolaImage.rotation = -azimuth
+                texto.text = "Rotação: %d".format(azimuth.toInt())
+            }
+
         }
 
-        var rotacao = FloatArray(9);
-        var orientacao = FloatArray(3)
-
-        val funcionou =  SensorManager.getRotationMatrix(rotacao, null, vetorGravidade, vetorNorteMagnetico)
-
-        if(!funcionou){
-            return
-        }
-
-        SensorManager.getOrientation(rotacao, orientacao)
-
-        var azimuth = Math.toDegrees(orientacao[0].toDouble()).toFloat()
-
-        if (azimuth < 0) {
-            azimuth += 360
-        }
-
-        bussolaImage.rotation = -azimuth
-        texto.text = "Rotação: %d".format(azimuth.toInt())
 
     }
 
