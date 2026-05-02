@@ -1,13 +1,11 @@
 package com.example.myapplication
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -16,17 +14,58 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
     var sensorManager: SensorManager ?= null
-    var sensor : Sensor ?= null
+    var accelerometerSensor : Sensor ?= null
+    var magneticSensor : Sensor ?= null;
+    var hasGravidade = false
+    var hasNorteMag = false
+    var vetorGravidade = FloatArray(3)
+    var vetorNorteMagnetico = FloatArray(3)
+
 
     lateinit var bussolaImage : ImageView
     lateinit var texto : TextView
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        print(p1)
     }
 
-    override fun onSensorChanged(p0: SensorEvent?) {
-        Log.d(TAG, "onSensorChanged: " + p0?.values[0])
+    override fun onSensorChanged(event: SensorEvent?) {
+
+        if (event == null) return
+
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            vetorGravidade = event.values.clone()
+            hasGravidade = true
+        }
+
+        if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            vetorNorteMagnetico = event.values.clone()
+            hasNorteMag = true
+        }
+
+        if(!hasGravidade || !hasNorteMag){
+            return
+        }
+
+        var rotacao = FloatArray(9);
+        var orientacao = FloatArray(3)
+
+        val funcionou =  SensorManager.getRotationMatrix(rotacao, null, vetorGravidade, vetorNorteMagnetico)
+
+        if(!funcionou){
+            return
+        }
+
+        SensorManager.getOrientation(rotacao, orientacao)
+
+        var azimuth = Math.toDegrees(orientacao[0].toDouble()).toFloat()
+
+        if (azimuth < 0) {
+            azimuth += 360
+        }
+
+        bussolaImage.rotation = -azimuth
+        texto.text = "Rotação: %d".format(azimuth.toInt())
+
     }
 
     override fun onResume() {
@@ -42,7 +81,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        sensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        accelerometerSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        magneticSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         bussolaImage = findViewById<ImageView>(R.id.bussulaImagem)
         texto = findViewById<TextView>(R.id.texto)
     }
