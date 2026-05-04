@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
-    private var sensorManager: SensorManager ?= null
+    private lateinit var sensorManager: SensorManager;
     private var sensorAcelerometro : Sensor ?= null
     private var sensorMagnetico : Sensor ?= null;
 
@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-        sensorAcelerometro = sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        sensorMagnetico = sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        sensorAcelerometro = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorMagnetico = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
         bussolaImage = findViewById<ImageView>(R.id.bussulaImagem)
         tvRotacao = findViewById<TextView>(R.id.texto)
@@ -62,17 +62,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onResume()
 
         if(sensorMagnetico != null){
-            sensorManager?.registerListener(this, sensorMagnetico, SensorManager.SENSOR_DELAY_GAME)
+            sensorManager.registerListener(this, sensorMagnetico, SensorManager.SENSOR_DELAY_GAME)
 
         }
         if(sensorAcelerometro != null){
-            sensorManager?.registerListener(this, sensorAcelerometro, SensorManager.SENSOR_DELAY_GAME)
+            sensorManager.registerListener(this, sensorAcelerometro, SensorManager.SENSOR_DELAY_GAME)
         }
     }
 
     override fun onPause() {
         super.onPause();
-        sensorManager?.unregisterListener(this)
+        sensorManager.unregisterListener(this)
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
